@@ -1,0 +1,57 @@
+PSEUDO-CODE FOR PC SETUP SCRIPT
+#Write script that will:
+ 
+Read settings from a config file 
+ 
+Change the hostname as needed
+ 
+Install and run Dell command update, rebooting as necessary
+ 
+Download and install Windows updates, rebooting as necessary
+ 
+Create scheduled task to run itself on boot
+ 
+Use config file to track where it needs to start off after reboot
+ 
+Delete the scheduled task when done
+ 
+ 
+ 
+Challenges:
+-how to reboot and resume script, see here https://atherbeg.com/2018/02/22/cloud-automation-running-powershell-or-other-scripts-after-reboots/
+ 
+#source the config file. The '.' means source vars from the file
+#$PSScriptRoot means the folder where this script is, so config.ps1 must be in the same folder
+$configFile=$PSScriptRoot\config.ps1
+. $configFile
+ 
+#We will read and set vars in the config file to say how far we got through the script
+#this way, the script can continue after reboot
+ 
+#create scheduled task
+https://atherbeg.com/2018/02/22/cloud-automation-running-powershell-or-other-scripts-after-reboots/
+ 
+ 
+if (-not $ranDCU1) {
+  #Dell Command Update did not make first run
+  Run Dell command update, see script https://github.com/greenmtnit/windows-scripts/blob/main/InstallAndRun-DellCommandUpdate.ps1
+  
+  #Then change the $ranDCU1 var to $true
+  #THIS DOES NOT REALLY WORK 
+  $line = Get-Content $configFile | Select-String ranDCU1 | Select-Object -ExpandProperty Line
+  $content = Get-Content $configFile
+  $content | ForEach-Object {$_ -replace $line,"$ranDCU1= $true"} | Set-Content $configFile
+  
+  
+  
+  #reboot
+  
+  
+}
+ 
+if (-not $InstallWindowsUpdates) {
+ 
+  Instal updates
+  change var to true
+  
+}
